@@ -58,7 +58,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
   if (room_.size == QVector2D(0.0f, 0.0f)) {
     return;
   }
-  const int fixed_width = 600;
+  const int fixed_width = 800;
   const float ratio = fixed_width / room_.size.x();
   painter.drawRect(0, 0, room_.size.x() * ratio, room_.size.y() * ratio);
 
@@ -67,5 +67,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
       continue;
     }
     painter.drawRect(table.RectInRoom(room_, ratio));
+    // painter.drawImage(QPoint(100, 100), QImage("soojin.jpeg").scaled(50, 50));
+    table.DrawProfileInRoom(painter, QImage("kevin.png"), room_, ratio);
   }
 }
