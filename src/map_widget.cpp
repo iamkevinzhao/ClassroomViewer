@@ -5,12 +5,18 @@
 #include <iostream>
 #include <QDebug>
 #include <QPainter>
+#include "profile.h"
 
 MapWidget::MapWidget(QWidget *parent) :
   QWidget(parent),
   ui(new Ui::MapWidget)
 {
   ui->setupUi(this);
+  if (!gFacebook) {
+    gFacebook.reset(new Facebook);
+  }
+  gFacebook->insert("Kevin", Profile{"Kevin", QImage("kevin.png")});
+
   QDomDocument xml;
   QFile f("room.xml");
   if (!f.open(QIODevice::ReadOnly)) {
@@ -34,14 +40,8 @@ MapWidget::MapWidget(QWidget *parent) :
       if (position.isNull()) {
         continue;
       }
-      QDomElement orientation = table.firstChildElement("ORIENTATION");
-      if (orientation.isNull()) {
-        continue;
-      }
       tab.position.setX(position.attribute("X").toFloat());
       tab.position.setY(position.attribute("Y").toFloat());
-      tab.heading.setX(orientation.attribute("X").toFloat());
-      tab.heading.setY(orientation.attribute("Y").toFloat());
       tables_.push_back(tab);
       table = table.nextSibling().toElement();
     }
@@ -58,7 +58,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
   if (room_.size == QVector2D(0.0f, 0.0f)) {
     return;
   }
-  const int fixed_width = 800;
+  const int fixed_width = this->size().width();
   const float ratio = fixed_width / room_.size.x();
   painter.drawRect(0, 0, room_.size.x() * ratio, room_.size.y() * ratio);
 
@@ -67,7 +67,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
       continue;
     }
     painter.drawRect(table.RectInRoom(room_, ratio));
-    // painter.drawImage(QPoint(100, 100), QImage("soojin.jpeg").scaled(50, 50));
-    table.DrawProfileInRoom(painter, QImage("kevin.png"), room_, ratio);
+    // table.DrawProfileInRoom(painter, QImage("kevin.png"), room_, ratio);
+    table.DrawProfileInRoom(painter, room_, ratio);
   }
 }

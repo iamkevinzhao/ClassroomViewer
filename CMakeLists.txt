@@ -20,6 +20,10 @@ add_executable(
     src/map_widget.cpp
     src/map_widget.h
     src/map_widget.ui
+    src/room_models.cpp
+    src/room_models.h
+    src/profile.cpp
+    src/profile.h
 )
 
 target_link_libraries(
