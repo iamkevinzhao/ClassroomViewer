@@ -70,4 +70,20 @@ void MapWidget::paintEvent(QPaintEvent *event) {
     // table.DrawProfileInRoom(painter, QImage("kevin.png"), room_, ratio);
     table.DrawProfileInRoom(painter, room_, ratio);
   }
+
+  // draw robot
+  painter.setPen(Qt::blue);
+  int robot_diam = fixed_width * 0.03;
+  if (robot_diam < 5) {
+    robot_diam = 5;
+  }
+  painter.drawEllipse(
+      robot.pos.x() * ratio - robot_diam / 2.0f,
+      (room_.size.y() - robot.pos.y()) * ratio - robot_diam / 2.0f,
+      robot_diam, robot_diam);
+  float beacon_real = robot_diam / 2.0f * 1.3f / ratio;
+  painter.drawLine(
+      robot.pos.x() * ratio, (room_.size.y() - robot.pos.y()) * ratio,
+      (robot.pos.x() + robot.ori.x() * beacon_real) * ratio,
+      (room_.size.y() - robot.pos.y() - robot.ori.y() * beacon_real) * ratio);
 }

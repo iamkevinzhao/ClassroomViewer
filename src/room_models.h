@@ -6,6 +6,11 @@
 #include <QPainter>
 #include "profile.h"
 
+struct Pose {
+  QVector2D pos;
+  QVector2D ori;
+};
+
 struct Room {
   QVector2D size;
 };
@@ -13,7 +18,7 @@ struct Room {
 struct Table {
   QVector2D size;
   QVector2D position;
-  QString owner = "Kevin";
+  QString owner;
   QString info() {
     return
         "size=(" +

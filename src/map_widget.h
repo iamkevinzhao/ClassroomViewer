@@ -16,6 +16,7 @@ public:
   explicit MapWidget(QWidget *parent = 0);
   ~MapWidget();
   std::vector<Table> tables;
+  Pose robot;
 protected:
   void paintEvent(QPaintEvent *event);
 private:

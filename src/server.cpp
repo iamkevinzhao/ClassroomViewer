@@ -97,6 +97,7 @@ bool Packet::Parse(QByteArray stream) {
     return false;
   }
   ori.setY(f);
+  ori.normalize();
 
   // distance
   if (stream.left(5) != "dist:") {
@@ -187,6 +188,13 @@ void Server::Process() {
         }
       }
       ++tab_id;
+    }
+  }
+  for (Packet& packet : packets) {
+    if (packet.name == "Robot") {
+      map->robot.pos = packet.pos;
+      map->robot.ori = packet.ori;
+      break;
     }
   }
   map->repaint();
