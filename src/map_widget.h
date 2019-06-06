@@ -15,12 +15,11 @@ class MapWidget : public QWidget
 public:
   explicit MapWidget(QWidget *parent = 0);
   ~MapWidget();
-
+  std::vector<Table> tables;
 protected:
   void paintEvent(QPaintEvent *event);
 private:
   Room room_;
-  std::vector<Table> tables_;
   Ui::MapWidget *ui;
 };
 

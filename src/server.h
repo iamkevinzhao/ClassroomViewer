@@ -3,6 +3,7 @@
 
 #include <QTcpServer>
 #include <QVector2D>
+#include "map_widget.h"
 
 struct Packet {
   // [name|position|orientation|dist]
@@ -17,12 +18,15 @@ struct Packet {
   QString info();
 };
 
-class Receiver : public QTcpServer
+class Server : public QTcpServer
 {
   Q_OBJECT
 public:
-  Receiver();
+  Server();
   std::vector<Packet> packets;
+  MapWidget* map = nullptr;
+protected:
+  void Process();
 public slots:
   void OnNewConnection();
   void OnReadyRead();

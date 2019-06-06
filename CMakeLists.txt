@@ -25,10 +25,10 @@ add_executable(
     src/room_models.h
     src/profile.cpp
     src/profile.h
-    src/receiver.cpp
-    src/receiver.h
-    src/policy.cpp
-    src/policy.h
+    src/server.cpp
+    src/server.h
+#    src/policy.cpp
+#    src/policy.h
 )
 
 target_link_libraries(

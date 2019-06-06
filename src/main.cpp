@@ -1,12 +1,13 @@
 #include "main_window.h"
 #include <QApplication>
-#include "receiver.h"
+#include "server.h"
 
 int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
   MainWindow win;
-  Receiver receiver;
+  Server server;
+  server.map = win.map;
   win.show();
   return app.exec();
 }

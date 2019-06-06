@@ -1,4 +1,4 @@
-#include "receiver.h"
+#include "server.h"
 #include <QDebug>
 #include <QHostAddress>
 #include <QTcpSocket>
@@ -129,7 +129,7 @@ void Packet::Parse(QByteArray stream, std::vector<Packet> &packets) {
   Parse(stream, packets);
 }
 
-Receiver::Receiver()
+Server::Server()
 {
   listen(QHostAddress::Any, 2368);
   connect(this, SIGNAL(newConnection()), this, SLOT(OnNewConnection()));
@@ -137,7 +137,7 @@ Receiver::Receiver()
 //  Packet::Parse("[ts:13413241234|name:Kevin|pos:10.0,4.5|ori:4.0,2.3|dist:4.0]", packets);
 }
 
-void Receiver::OnNewConnection() {
+void Server::OnNewConnection() {
   QTcpSocket* client = nextPendingConnection();
   connect(client, SIGNAL(readyRead()), this, SLOT(OnReadyRead()));
   connect(
@@ -146,7 +146,7 @@ void Receiver::OnNewConnection() {
   sockets_.push_back(client);
 }
 
-void Receiver::OnReadyRead() {
+void Server::OnReadyRead() {
   QTcpSocket* sender = static_cast<QTcpSocket*>(QObject::sender());
   QByteArray data = sender->readAll();
   std::vector<Packet> pkts;
@@ -156,13 +156,39 @@ void Receiver::OnReadyRead() {
   if (packets.size() > buf_size) {
     packets.erase(packets.end() - (packets.size() - buf_size), packets.end());
   }
+  Process();
 }
 
-void Receiver::OnSocketStateChanged(QAbstractSocket::SocketState socketState)
+void Server::OnSocketStateChanged(QAbstractSocket::SocketState socketState)
 {
   if (socketState == QAbstractSocket::UnconnectedState)
   {
     QTcpSocket* sender = static_cast<QTcpSocket*>(QObject::sender());
     sockets_.removeOne(sender);
   }
+}
+
+void Server::Process() {
+  if (!map) {
+    return;
+  }
+  int tab_id = 0;
+  for (Packet& packet : packets) {
+    for (Table& table : map->tables) {
+      if (table.position.distanceToPoint(packet.pos) < packet.dist) {
+        table.owner = packet.name;
+        for (int i = 0; i < map->tables.size(); ++i) {
+          if (i == tab_id) {
+            continue;
+          }
+          if (map->tables[i].owner == packet.name) {
+            map->tables[i].owner = "";
+          }
+        }
+      }
+      ++tab_id;
+    }
+  }
+  map->repaint();
+  packets.clear();
 }

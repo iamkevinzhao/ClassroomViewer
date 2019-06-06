@@ -42,7 +42,7 @@ MapWidget::MapWidget(QWidget *parent) :
       }
       tab.position.setX(position.attribute("X").toFloat());
       tab.position.setY(position.attribute("Y").toFloat());
-      tables_.push_back(tab);
+      tables.push_back(tab);
       table = table.nextSibling().toElement();
     }
   }
@@ -62,7 +62,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
   const float ratio = fixed_width / room_.size.x();
   painter.drawRect(0, 0, room_.size.x() * ratio, room_.size.y() * ratio);
 
-  for (Table& table : tables_) {
+  for (Table& table : tables) {
     if (table.size == QVector2D(0.0f, 0.0f)) {
       continue;
     }
