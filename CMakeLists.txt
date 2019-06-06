@@ -10,6 +10,7 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5Widgets)
 find_package(Qt5Xml)
+find_package(Qt5Network)
 
 add_executable(
   ${PROJECT_NAME}
@@ -24,10 +25,15 @@ add_executable(
     src/room_models.h
     src/profile.cpp
     src/profile.h
+    src/receiver.cpp
+    src/receiver.h
+    src/policy.cpp
+    src/policy.h
 )
 
 target_link_libraries(
   ${PROJECT_NAME}
     Qt5::Widgets
     Qt5::Xml
+    Qt5::Network
 )
