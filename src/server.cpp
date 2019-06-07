@@ -169,11 +169,20 @@ void Server::OnSocketStateChanged(QAbstractSocket::SocketState socketState)
   }
 }
 
-void Server::Process() {
+
+//////////////////////////// Map Server ///////////////////////////
+MapServer::MapServer() {}
+
+void MapServer::Process() {
   if (!map) {
     return;
   }
   int tab_id = 0;
+  qDebug() << packets[0].pos << calib_trans_.t;
+  for (Packet& packet : packets) {
+    packet.ori = calib_trans_.Rotate(packet.ori);
+    packet.pos = packet.pos + calib_trans_.t;
+  }
   for (Packet& packet : packets) {
     for (Table& table : map->tables) {
       if (table.position.distanceToPoint(packet.pos) < packet.dist) {
@@ -194,9 +203,20 @@ void Server::Process() {
     if (packet.name == "Robot") {
       map->robot.pos = packet.pos;
       map->robot.ori = packet.ori;
+      newest_pose_ = map->robot;
       break;
     }
   }
-  map->repaint();
+  map->update();
   packets.clear();
+}
+
+void MapServer::OnCalibrated(Pose pose) {
+  calib_trans_ = Transform(newest_pose_, pose);
+  newest_pose_ = calib_trans_.transform(newest_pose_);
+  if (map) {
+    map->robot = newest_pose_;
+    map->update();
+  }
+
 }

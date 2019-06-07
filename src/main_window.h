@@ -16,6 +16,15 @@ public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
   MapWidget* map = nullptr;
+signals:
+  void OnCalibrated(Pose pose);
+
+private slots:
+  void on_CalibrationButton_clicked();
+
+  void on_PositionXEdit_editingFinished();
+
+  void on_PositionYEdit_editingFinished();
 
 private:
   Ui::MainWindow *ui;

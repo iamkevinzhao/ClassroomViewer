@@ -24,15 +24,29 @@ class Server : public QTcpServer
 public:
   Server();
   std::vector<Packet> packets;
-  MapWidget* map = nullptr;
 protected:
-  void Process();
+  virtual void Process() = 0;
 public slots:
   void OnNewConnection();
   void OnReadyRead();
   void OnSocketStateChanged(QAbstractSocket::SocketState socketState);
 private:
   QList<QTcpSocket*>  sockets_;
+};
+
+class MapServer : public Server {
+  Q_OBJECT
+public:
+  MapServer();
+  MapWidget* map = nullptr;
+public slots:
+  void OnCalibrated(Pose pose);
+protected:
+  void Process() override;
+private:
+  Pose newest_pose_;
+  Transform calib_trans_;
+  // Transform cali_trans_;
 };
 
 #endif // RECEIVER_H

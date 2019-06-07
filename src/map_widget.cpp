@@ -27,8 +27,8 @@ MapWidget::MapWidget(QWidget *parent) :
 
   bool ok;
   QDomElement root = xml.documentElement();
-  room_.size.setX(root.attribute("LENGTH", "0.0").toFloat());
-  room_.size.setY(root.attribute("WIDTH", "0.0").toFloat());
+  room.size.setX(root.attribute("LENGTH", "0.0").toFloat());
+  room.size.setY(root.attribute("WIDTH", "0.0").toFloat());
 
   QDomElement table = root.firstChild().toElement();
   while (!table.isNull()) {
@@ -55,20 +55,19 @@ MapWidget::~MapWidget()
 
 void MapWidget::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
-  if (room_.size == QVector2D(0.0f, 0.0f)) {
+  if (room.size == QVector2D(0.0f, 0.0f)) {
     return;
   }
   const int fixed_width = this->size().width();
-  const float ratio = fixed_width / room_.size.x();
-  painter.drawRect(0, 0, room_.size.x() * ratio, room_.size.y() * ratio);
+  const float ratio = fixed_width / room.size.x();
+  painter.drawRect(0, 0, room.size.x() * ratio, room.size.y() * ratio);
 
   for (Table& table : tables) {
     if (table.size == QVector2D(0.0f, 0.0f)) {
       continue;
     }
-    painter.drawRect(table.RectInRoom(room_, ratio));
-    // table.DrawProfileInRoom(painter, QImage("kevin.png"), room_, ratio);
-    table.DrawProfileInRoom(painter, room_, ratio);
+    painter.drawRect(table.RectInRoom(room, ratio));
+    table.DrawProfileInRoom(painter, room, ratio);
   }
 
   // draw robot
@@ -79,11 +78,28 @@ void MapWidget::paintEvent(QPaintEvent *event) {
   }
   painter.drawEllipse(
       robot.pos.x() * ratio - robot_diam / 2.0f,
-      (room_.size.y() - robot.pos.y()) * ratio - robot_diam / 2.0f,
+      (room.size.y() - robot.pos.y()) * ratio - robot_diam / 2.0f,
       robot_diam, robot_diam);
   float beacon_real = robot_diam / 2.0f * 1.3f / ratio;
   painter.drawLine(
-      robot.pos.x() * ratio, (room_.size.y() - robot.pos.y()) * ratio,
+      robot.pos.x() * ratio, (room.size.y() - robot.pos.y()) * ratio,
       (robot.pos.x() + robot.ori.x() * beacon_real) * ratio,
-      (room_.size.y() - robot.pos.y() - robot.ori.y() * beacon_real) * ratio);
+      (room.size.y() - robot.pos.y() - robot.ori.y() * beacon_real) * ratio);
+
+  // calibration beacon
+  painter.setPen(Qt::red);
+  painter.drawLine(
+      calib_pose.pos.x() * ratio, (room.size.y() - calib_pose.pos.y()) * ratio,
+      (calib_pose.pos.x() + calib_pose.ori.x() * beacon_real) * ratio,
+      (room.size.y() - calib_pose.pos.y() - calib_pose.ori.y() * beacon_real) * ratio);
+  beacon_real *= 0.5;
+  QVector2D perp = Transform::Rotate(calib_pose.ori, -90);
+  painter.drawLine(
+      calib_pose.pos.x() * ratio, (room.size.y() - calib_pose.pos.y()) * ratio,
+      (calib_pose.pos.x() + perp.x() * beacon_real) * ratio,
+      (room.size.y() - calib_pose.pos.y() - perp.y() * beacon_real) * ratio);
+//  painter.drawLine(
+//      calib_pose.pos.x() * ratio, (room.size.y() - calib_pose.pos.y()) * ratio,
+//      (calib_pose.pos.x() + calib_pose.ori.y() * beacon_real) * ratio,
+//      (room.size.y() - calib_pose.pos.y() - calib_pose.ori.x() * beacon_real) * ratio);
 }

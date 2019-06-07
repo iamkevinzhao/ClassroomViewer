@@ -17,10 +17,11 @@ public:
   ~MapWidget();
   std::vector<Table> tables;
   Pose robot;
+  Room room;
+  Pose calib_pose;
 protected:
   void paintEvent(QPaintEvent *event);
 private:
-  Room room_;
   Ui::MapWidget *ui;
 };
 
