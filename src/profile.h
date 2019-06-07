@@ -15,4 +15,6 @@ using Facebook = QHash<QString, Profile>;
 
 extern std::shared_ptr<Facebook> gFacebook;
 
+bool LoadFacebook();
+
 #endif // PROFILE_H

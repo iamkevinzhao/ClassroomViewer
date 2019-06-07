@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QPainter>
 #include "profile.h"
+#include <cmath>
 
 struct Pose {
   QVector2D pos;

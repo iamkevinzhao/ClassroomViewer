@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->PositionYEdit->setText(QString::number(map->room.size.y() / 2.0f));
   on_PositionXEdit_editingFinished();
   on_PositionYEdit_editingFinished();
+  setWindowTitle("ClassroomViewer");
 }
 
 MainWindow::~MainWindow()

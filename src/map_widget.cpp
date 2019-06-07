@@ -12,10 +12,7 @@ MapWidget::MapWidget(QWidget *parent) :
   ui(new Ui::MapWidget)
 {
   ui->setupUi(this);
-  if (!gFacebook) {
-    gFacebook.reset(new Facebook);
-  }
-  gFacebook->insert("Kevin", Profile{"Kevin", QImage("kevin.png")});
+  LoadFacebook();
 
   QDomDocument xml;
   QFile f("room.xml");
