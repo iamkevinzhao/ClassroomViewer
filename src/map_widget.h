@@ -2,7 +2,7 @@
 #define MAP_WIDGET_H
 
 #include <QWidget>
-#include "room_models.h"
+#include "models.h"
 
 namespace Ui {
   class MapWidget;
