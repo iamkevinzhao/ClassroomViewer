@@ -132,7 +132,7 @@ void Packet::Parse(QByteArray stream, std::vector<Packet> &packets) {
 
 Server::Server()
 {
-  listen(QHostAddress::Any, 2368);
+  listen(QHostAddress::Any, 2369);
   connect(this, SIGNAL(newConnection()), this, SLOT(OnNewConnection()));
 //  std::vector<Packet> packets;
 //  Packet::Parse("[ts:13413241234|name:Kevin|pos:10.0,4.5|ori:4.0,2.3|dist:4.0]", packets);
@@ -177,8 +177,9 @@ void MapServer::Process() {
   if (!map) {
     return;
   }
+  const QString kRobot = "robot";
   for (Packet& packet : packets) {
-    if (packet.name == "Robot") {
+    if (packet.name == kRobot) {
       newest_pose_.pos = packet.pos;
       newest_pose_.ori = packet.ori;
       break;
@@ -190,6 +191,9 @@ void MapServer::Process() {
   }
   int tab_id = 0;
   for (Packet& packet : packets) {
+    if (packet.name == kRobot) {
+      continue;
+    }
     for (Table& table : map->tables) {
       if (table.position.distanceToPoint(packet.pos) < packet.dist) {
         table.owner = packet.name;
@@ -206,7 +210,7 @@ void MapServer::Process() {
     }
   }
   for (Packet& packet : packets) {
-    if (packet.name == "Robot") {
+    if (packet.name == kRobot) {
       map->robot.pos = packet.pos;
       map->robot.ori = packet.ori;
       break;
