@@ -15,7 +15,7 @@ struct Packet {
 
   static void Parse(QByteArray stream, std::vector<Packet>& packets);
   bool Parse(QByteArray stream);
-  QString info();
+  QString info() const;
 };
 
 class Server : public QTcpServer
@@ -44,6 +44,8 @@ public slots:
 protected:
   void Process() override;
 private:
+  bool IsTheClosestTable(const Table& query, const std::vector<Table>& tables, const Packet& packet);
+  Table* FindClosestTable(const Packet& packet, std::vector<Table>& tables);
   Pose newest_pose_;
   Transform calib_trans_;
   // Transform cali_trans_;

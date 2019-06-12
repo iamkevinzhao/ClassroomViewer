@@ -69,9 +69,9 @@ void MapWidget::paintEvent(QPaintEvent *event) {
     if (table.size == QVector2D(0.0f, 0.0f)) {
       continue;
     }
+    // DrawHeadingMarkInRoom({table.position, table.heading}, room, ratio, painter);
     painter.drawRect(table.RectInRoom(room, ratio));
     table.DrawProfileInRoom(painter, room, ratio);
-    DrawHeadingMarkInRoom({table.position, table.heading}, room, ratio, painter);
   }
 
   // draw robot
@@ -92,6 +92,9 @@ void MapWidget::paintEvent(QPaintEvent *event) {
 
   // calibration beacon
   painter.setPen(Qt::red);
+#if 0
+  DrawHeadingMarkInRoom(calib_pose, room, ratio, painter);
+#else
   painter.drawLine(
       calib_pose.pos.x() * ratio, (room.size.y() - calib_pose.pos.y()) * ratio,
       (calib_pose.pos.x() + calib_pose.ori.x() * beacon_real) * ratio,
@@ -102,10 +105,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
       calib_pose.pos.x() * ratio, (room.size.y() - calib_pose.pos.y()) * ratio,
       (calib_pose.pos.x() + perp.x() * beacon_real) * ratio,
       (room.size.y() - calib_pose.pos.y() - perp.y() * beacon_real) * ratio);
-//  painter.drawLine(
-//      calib_pose.pos.x() * ratio, (room.size.y() - calib_pose.pos.y()) * ratio,
-//      (calib_pose.pos.x() + calib_pose.ori.y() * beacon_real) * ratio,
-//      (room.size.y() - calib_pose.pos.y() - calib_pose.ori.x() * beacon_real) * ratio);
+#endif
 }
 
 void MapWidget::DrawHeadingMarkInRoom(

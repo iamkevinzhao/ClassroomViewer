@@ -4,7 +4,7 @@
 #include <QTcpSocket>
 #include <QThread>
 
-QString Packet::info() {
+QString Packet::info() const {
   return
       "ts:" + QString::number(ts) + " " +
       "pos:" + QString::number(pos.x()) + "," + QString::number(pos.y()) + " " +
@@ -189,26 +189,40 @@ void MapServer::Process() {
     packet.ori = calib_trans_.Rotate(packet.ori);
     packet.pos = packet.pos + calib_trans_.t;
   }
-  int tab_id = 0;
+  // int tab_id = 0;
   for (Packet& packet : packets) {
     if (packet.name == kRobot) {
       continue;
     }
-    for (Table& table : map->tables) {
-      // if (table.position.distanceToPoint(packet.pos) < packet.dist) {
-      if (table.position.distanceToPoint(packet.pos) < 1.5) {
-        table.owner = packet.name;
-        for (int i = 0; i < map->tables.size(); ++i) {
-          if (i == tab_id) {
-            continue;
-          }
-          if (map->tables[i].owner == packet.name) {
-            map->tables[i].owner = "";
-          }
-        }
-      }
-      ++tab_id;
+    Table* closest = FindClosestTable(packet, map->tables);
+    if (!closest) {
+      continue;
     }
+    closest->owner = packet.name;
+    for (Table& table : map->tables) {
+      if (&table == closest) {
+        continue;
+      }
+      if (table.owner == packet.name) {
+        table.owner = "";
+      }
+    }
+//    for (Table& table : map->tables) {
+//      // if (table.position.distanceToPoint(packet.pos) < packet.dist) {
+////      if (table.position.distanceToPoint(packet.pos) < 1.5) {
+//      if (IsTheClosestTable(table, map->tables, packet)) {
+//        table.owner = packet.name;
+//        for (int i = 0; i < map->tables.size(); ++i) {
+//          if (i == tab_id) {
+//            continue;
+//          }
+//          if (map->tables[i].owner == packet.name) {
+//            map->tables[i].owner = "";
+//          }
+//        }
+//      }
+//      ++tab_id;
+//    }
   }
   for (Packet& packet : packets) {
     if (packet.name == kRobot) {
@@ -227,4 +241,44 @@ void MapServer::OnCalibrated(Pose pose) {
     map->robot = calib_trans_.transform(newest_pose_);
     map->update();
   }
+}
+
+Table* MapServer::FindClosestTable(
+    const Packet &packet, std::vector<Table> &tables) {
+  float max_dist = 1000.0;
+  Table* result = nullptr;
+  for (Table& table : tables) {
+    float query_range = 0.5;
+    float table_range = 1.0;
+    QVector2D query_end = packet.pos + packet.ori * query_range;
+    QVector2D seat_end = table.position + table.heading * table_range;
+    float dist = (query_end - seat_end).length();
+    if (dist < max_dist) {
+      max_dist = dist;
+      result = &table;
+    }
+  }
+  if (max_dist > 1.0f) {
+    result = nullptr;
+  }
+  return result;
+}
+
+bool MapServer::IsTheClosestTable(const Table& query, const std::vector<Table>& tables,
+    const Packet& packet) {
+  float query_range = 0.5;
+  float table_range = 1.0;
+  QVector2D query_end = packet.pos + packet.ori * query_range;
+  QVector2D seat_end = query.position + query.heading * table_range;
+  float query_dist = (query_end - seat_end).length();
+  // const Table* best = nullptr;
+  for (const Table& table : tables) {
+    query_end = packet.pos + packet.ori * query_range;
+    seat_end = table.position + table.heading * table_range;
+    float dist = (query_end - seat_end).length();
+    if (dist < query_dist) {
+      false;
+    }
+  }
+  return true;
 }

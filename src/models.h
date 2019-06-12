@@ -54,7 +54,7 @@ struct Table {
   QVector2D position;
   QVector2D heading;
   QString owner;
-  QString info() {
+  QString info() const {
     return
         "size=(" +
             QString::number(size.x()) + ", " +
