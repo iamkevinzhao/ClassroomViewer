@@ -195,7 +195,8 @@ void MapServer::Process() {
       continue;
     }
     for (Table& table : map->tables) {
-      if (table.position.distanceToPoint(packet.pos) < packet.dist) {
+      // if (table.position.distanceToPoint(packet.pos) < packet.dist) {
+      if (table.position.distanceToPoint(packet.pos) < 1.5) {
         table.owner = packet.name;
         for (int i = 0; i < map->tables.size(); ++i) {
           if (i == tab_id) {

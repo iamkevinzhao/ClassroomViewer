@@ -13,8 +13,10 @@ MainWindow::MainWindow(QWidget *parent) :
   map->calib_pose.ori.setY(1.0);
   map->calib_pose.ori.normalize();
   ui->MapLayout->addWidget(map);
-  ui->PositionXEdit->setText(QString::number(map->room.size.x() / 2.0f));
-  ui->PositionYEdit->setText(QString::number(map->room.size.y() / 2.0f));
+//  ui->PositionXEdit->setText(QString::number(map->room.size.x() / 2.0f));
+//  ui->PositionYEdit->setText(QString::number(map->room.size.y() / 2.0f));
+  ui->PositionXEdit->setText(QString::number(4.95));
+  ui->PositionYEdit->setText(QString::number(2.7));
   on_PositionXEdit_editingFinished();
   on_PositionYEdit_editingFinished();
   setWindowTitle("ClassroomViewer");

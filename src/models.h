@@ -52,6 +52,7 @@ struct Transform {
 struct Table {
   QVector2D size;
   QVector2D position;
+  QVector2D heading;
   QString owner;
   QString info() {
     return

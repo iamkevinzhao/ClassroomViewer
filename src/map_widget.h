@@ -21,6 +21,8 @@ public:
   Pose calib_pose;
 protected:
   void paintEvent(QPaintEvent *event);
+  void DrawHeadingMarkInRoom(
+      const Pose& heading, const Room& room, const float& ratio, QPainter& painter);
 private:
   Ui::MapWidget *ui;
 };

@@ -39,6 +39,12 @@ MapWidget::MapWidget(QWidget *parent) :
       }
       tab.position.setX(position.attribute("X").toFloat());
       tab.position.setY(position.attribute("Y").toFloat());
+      QDomElement heading = position.nextSiblingElement("HEADING");
+      if (heading.isNull()) {
+        continue;
+      }
+      tab.heading.setX(heading.attribute("X").toFloat());
+      tab.heading.setY(heading.attribute("Y").toFloat());
       tables.push_back(tab);
       table = table.nextSibling().toElement();
     }
@@ -65,6 +71,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
     }
     painter.drawRect(table.RectInRoom(room, ratio));
     table.DrawProfileInRoom(painter, room, ratio);
+    DrawHeadingMarkInRoom({table.position, table.heading}, room, ratio, painter);
   }
 
   // draw robot
@@ -99,4 +106,20 @@ void MapWidget::paintEvent(QPaintEvent *event) {
 //      calib_pose.pos.x() * ratio, (room.size.y() - calib_pose.pos.y()) * ratio,
 //      (calib_pose.pos.x() + calib_pose.ori.y() * beacon_real) * ratio,
 //      (room.size.y() - calib_pose.pos.y() - calib_pose.ori.x() * beacon_real) * ratio);
+}
+
+void MapWidget::DrawHeadingMarkInRoom(
+    const Pose &pose, const Room& room, const float& ratio, QPainter& painter) {
+  // painter.setPen(Qt::red);
+  float beacon_real = room.size.x() * 0.01;
+  painter.drawLine(
+      pose.pos.x() * ratio, (room.size.y() - pose.pos.y()) * ratio,
+      (pose.pos.x() + pose.ori.x() * beacon_real) * ratio,
+      (room.size.y() - pose.pos.y() - pose.ori.y() * beacon_real) * ratio);
+  beacon_real *= 0.5;
+  QVector2D perp = Transform::Rotate(pose.ori, -90);
+  painter.drawLine(
+      pose.pos.x() * ratio, (room.size.y() - pose.pos.y()) * ratio,
+      (pose.pos.x() + perp.x() * beacon_real) * ratio,
+      (room.size.y() - pose.pos.y() - perp.y() * beacon_real) * ratio);
 }
