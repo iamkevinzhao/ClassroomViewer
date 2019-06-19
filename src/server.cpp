@@ -185,13 +185,25 @@ void MapServer::Process() {
       break;
     }
   }
+  const QString kCalibration = "calibration";
+  for (Packet& packet : packets) {
+    if (packet.name == kCalibration) {
+      Pose pose;
+      newest_pose_ = pose;
+      pose.pos = packet.pos;
+      pose.ori = packet.ori;
+      OnCalibrated(pose);
+      break;
+    }
+  }
   for (Packet& packet : packets) {
     packet.ori = calib_trans_.Rotate(packet.ori);
     packet.pos = packet.pos + calib_trans_.t;
   }
   // int tab_id = 0;
   for (Packet& packet : packets) {
-    if (packet.name == kRobot) {
+    if ((packet.name == kRobot) ||
+        (packet.name == kCalibration)) {
       continue;
     }
     Table* closest = FindClosestTable(packet, map->tables);

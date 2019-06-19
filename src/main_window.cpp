@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
   on_PositionXEdit_editingFinished();
   on_PositionYEdit_editingFinished();
   setWindowTitle("ClassroomViewer");
+  ui->ScaleEdit->setVisible(false);
 }
 
 MainWindow::~MainWindow()
